@@ -1,0 +1,519 @@
+---
+title: "Blog analytics and visuals"
+author: "Christopher Kimani"
+date: "2022-07-22"
+output: word_document
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+## 1. Defining the Question**
+a) Specifying the Data Analytic Question
+
+A Kenyan entrepreneur has created an online cryptography course and 
+would want to advertise it on her blog. She currently targets audiences 
+originating from various countries. In the past, she ran ads to advertise a 
+related course on the same blog and collected data in the process. She 
+would now like to employ your services as a Data Science Consultant to 
+help her identify which individuals are most likely to click on her ads.
+
+**b) Defining the Metric for Success**
+
+1.Define the question, the metric for success, the context, experimental design taken and the appropriateness of the available data to answer the given question.
+
+2.Perform univariate analysis.
+
+3.Exhaustively perform bivariate analysis.
+
+**c) Understanding the context**
+Perform Exploratory Data Analysis for the give data set 
+<http://bit.ly/IPAdvertisingData>
+
+**d) Experimental design taken**
+
+1.Reading and checking our data
+2.Clean data by finding and dealing with outliers, anomalies, and missing 
+data within the dataset.
+3.Perform univariate and bivariate analysis.
+4.From the insights provide a conclusion and recommendation.
+
+**e) Appropriateness of the data**
+
+The data is relevant for this study.
+
+## 2. Loading the data**
+```{r}
+data <- read.csv('C:\\Users\\USER\\Downloads\\advertising.csv', header = TRUE)
+```
+
+checking the first 6 rows 
+```{r}
+head(data)
+```
+checking the last 6 rows 
+```{r}
+tail(data)
+```
+Checking the dimensions of the data
+There are 1000 rows and 10 columns.
+```{r}
+dim(data)
+```
+Checking the column names 
+```{r}
+ls(data)
+```
+Checking the data types and structure 
+The data is made up of numericals, characters and integers.
+```{r}
+str(data)
+```
+Checking the class of the data 
+the data is a data frame
+```{r}
+class(data)
+```
+## 3. Data Cleaning
+Checking for missing values
+**There are no missing values in this data** 
+```{r}
+colSums(is.na(data))
+```
+Checking for duplicated values 
+**There are no duplicated values in the data.**
+```{r}
+sum(duplicated(data))
+```
+Checking for outliers 
+**There are no outliers in all other columns other than in the Area Income column.**
+**I will however not remove these outliers as they may be useful in the analysis**
+```{r}
+length(boxplot.stats(data$'Daily.Time.Spent.on.Site')$out)
+length(boxplot.stats(data$'Age')$out)
+length(boxplot.stats(data$'Area.Income')$out)
+length(boxplot.stats(data$'Daily.Internet.Usage')$out)
+```
+Plotting outliers in the Area Income column 
+```{r}
+boxplot(data$'Area.Income')
+```
+# Exploratory Data Analysis
+## 4. Univariate Analysis
+A summary of the data
+**This shows a summary statistic of data. The mean, median, minimum and maximum values, the class of the data and the quartiles**
+```{r}
+summary(data)
+```
+Obtaining the variances of the data 
+**This shows the variances of the chosen columns**
+```{r}
+var(data$'Age')
+var(data$'Daily.Time.Spent.on.Site')
+var(data$'Area.Income')
+var(data$'Daily.Internet.Usage')
+```
+Obtaining the standard deviation of the data
+**This shows the standard deviation of the data**
+```{r}
+sd(data$'Age')
+sd(data$'Daily.Time.Spent.on.Site')
+sd(data$'Area.Income')
+sd(data$'Daily.Internet.Usage')
+```
+Obtaining the mode of the data 
+**This shows the mode of the data**
+```{r}
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]}
+getmode(data$'Age')
+getmode(data$'Daily.Time.Spent.on.Site')
+getmode(data$'Area.Income')
+getmode(data$'Daily.Internet.Usage')
+```
+Getting which countries had the most count
+
+**Aruba had the least count**
+**France and Czech Republic had the most count**
+```{r}
+country = table(data$Country)
+countries <- sort(country, increasing = TRUE)
+countries <- sort(country, decreasing = TRUE)
+head(countries)
+```
+
+
+
+
+Obtaining the count and visualisation of Click.on.Ad
+**There is an equal number of those who clicked and those not clicked of 500**
+**There is no class imbalance**
+```{r}
+clicked <- table(data$'Clicked.on.Ad')
+clicked
+labels <- c('clicked','did not click')
+barplot(clicked, ylab = 'count', names.arg = labels, xlab = 'clicked', main ='clicked_count', col = 'green')
+```
+Gender count
+**The number of females is slightly more than that of men**
+```{r}
+gender <- table(data$'Male')
+gender
+label <- c('female','male')
+barplot(gender, ylab = 'count',names.arg = label, xlab = 'gender', main = 'gender_count', col = 'green')
+```
+Histogram for Age
+**Most people in the data are aged 25-45 years**
+```{r}
+hist(data$'Age', ylab = 'count', xlab = 'age', main = 'age_count', col = 'green')
+```
+Histogram for Area Income 
+**This chart shows that Area.Income is skewed to the right**
+```{r}
+hist(data$'Area.Income', ylab = 'count', xlab = 'income', main = 'area_income', col = 'green')
+```
+Showing the skewness of the Area Income column
+```{r}
+install.packages("moments")
+library(moments)
+skewness(data$Area.Income)
+```
+Histogram of Daily Internet Usage
+**The data is more or less equally distributed**
+```{r}
+hist(data$'Daily.Internet.Usage', ylab ='count', xlab = 'internet usage', main = 'daily internet usage', col = 'green')
+```
+Histogram of Daily Time Spent on Site 
+**The data is fairly skewed to the right**
+```{r}
+hist(data$Daily.Time.Spent.on.Site, ylab = 'count', xlab = 'daily time spent on site', main = 'Daily time spent on site', col = 'green')
+skewness(data$'Daily.Time.Spent.on.Site')
+```
+##5. Bivariate Analysis
+
+Average Income per gender 
+
+**Men had more income than females**
+```{r}
+mean(data[data$Male == '1', 'Area.Income'])
+mean(data[data$Male == '0', 'Area.Income'])
+```
+
+Scaling some columns 
+```{r}
+nage <- scale(age)
+nusage <- scale(usage)
+ntime <- scale(time)
+```
+
+Relationship between age and daily time spent on site 
+
+**From this plot it is seen that people around the age of 25-35 years spent the most time on site**
+**People above the age of 40 spend lesser time on site.**
+**There is a negative correlation between age and time.**
+```{r}
+age <- data$'Age'
+time <- data$'Daily.Time.Spent.on.Site'
+plot(age, time, ylab = 'time spent', xlab = 'age', main = 'time spent on site against age', col = 'green')
+cov(nage, ntime)
+```
+
+Relationship between age and daily internet usage
+
+**The ages below 40 had more usage than those above 40 years.**
+**There is a negative correlation between age and daily internet usage**
+
+```{r}
+usage <- data$'Daily.Internet.Usage'
+cov(usage, age)
+plot(age, usage, ylab ='daily internet usage', xlab ='age', main ='daily internet usage against age', col = 'green')
+cov(nage, nusage)
+```
+# 8. Conclusion
+
+1.  There are more females than males in our data.
+
+2.  500 people clicked on the ads while 500 others did not click on the ads.
+
+3.  The average area income is 55000.
+
+5.  The average age of most audience is 36 years 
+
+6.  Lisamouth and Williamsport cities both had the highest number of individuals in the dataset.
+
+
+
+## 9. Recommendations
+
+1.  Persons aged between 25 and 35 years old were the most in the data, thus creating ads to target these age group would be very impactful.
+
+2.  Creating ads that target men makes more sense since men have more income compared to women.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
