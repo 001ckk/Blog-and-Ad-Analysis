@@ -1,8 +1,6 @@
 # Blog-and-Ad-Analysis
-Blog Analytics with R
+Blog Analytics with R: Identify features of those who click on ads on a Cryptography course blog.
 
-Blog-Analytics-Findings
-R Project : Identify features of those who click on ads on a Cryptography course blog.
 
 By Christopher Kimani
 
@@ -28,6 +26,7 @@ In the past, she ran ads to advertise a related course on the same blog and coll
 **Setup/Installation Requirements**
 
 RStudio
+
 Git
 
 Contacts : christopherkimani001@gmail.com
