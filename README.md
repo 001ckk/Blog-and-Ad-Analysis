@@ -2,7 +2,7 @@
 Blog Analytics with R: Identify features of those who click on ads on a Cryptography course blog.
 
 
-##**Research Question**
+##Research Question
 
 Identify which characteristics sets out the individuals who click on Ads on the Cryptography course blog
 
@@ -26,6 +26,8 @@ In the past, she ran ads to advertise a related course on the same blog and coll
 RStudio
 
 Git
+
+**Contact**
 
 By: Christopher Kimani
 
